@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AlertCircle, Plus, Search, X } from 'lucide-react'
+import { AlertCircle, CircleAlert, Plus, Search, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -102,6 +102,8 @@ export default function Casos() {
   const casosFiltrados = busca
     ? casos.filter((c) => c.caso_id.toLowerCase().includes(busca.toLowerCase()))
     : casos
+
+  const pendencias = casos.filter((caso) => !caso.unidade.trim())
 
   function handleFieldChange(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -379,6 +381,31 @@ export default function Casos() {
                 </Button>
               </div>
             </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {pendencias.length > 0 && (
+        <Card className="mb-6 border-amber-200 bg-amber-50">
+          <CardContent className="flex items-start gap-3 pt-6">
+            <CircleAlert className="mt-0.5 size-5 shrink-0 text-amber-600" />
+            <div>
+              <p className="font-semibold text-amber-900">
+                {pendencias.length === 1
+                  ? '1 caso com pendência de unidade'
+                  : `${pendencias.length} casos com pendência de unidade`}
+              </p>
+              <ul className="mt-2 space-y-1 text-sm text-amber-800">
+                {pendencias.map((caso) => (
+                  <li key={caso.id}>
+                    <strong>{caso.caso_id}</strong> · responsável: {caso.responsavel} · prazo:{' '}
+                    {caso.prazo
+                      ? new Date(caso.prazo).toLocaleDateString('pt-BR')
+                      : 'não informado'}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </CardContent>
         </Card>
       )}

@@ -14,7 +14,14 @@ export function extractFieldErrors(error: unknown): FieldErrors {
       'message' in detail &&
       typeof (detail as { message: unknown }).message === 'string'
     ) {
-      errors[field] = (detail as { message: string }).message
+      const code =
+        'code' in detail && typeof (detail as { code: unknown }).code === 'string'
+          ? (detail as { code: string }).code
+          : ''
+      errors[field] =
+        field === 'caso_id' && code === 'validation_not_unique'
+          ? 'Já existe um caso com este ID. Use outro caso_id ou consulte o registro existente.'
+          : (detail as { message: string }).message
     }
   }
   return errors
