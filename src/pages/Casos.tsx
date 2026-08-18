@@ -153,7 +153,19 @@ export default function Casos() {
       await carregar()
     } catch (err) {
       const fieldErrors = extractFieldErrors(err)
-      if (Object.keys(fieldErrors).length > 0) {
+      const rawMessage = err instanceof Error ? err.message : ''
+      const duplicateCaseId =
+        fieldErrors.caso_id === 'Value must be unique.' ||
+        rawMessage.includes('validation_not_unique') ||
+        rawMessage.includes('Value must be unique.')
+      if (duplicateCaseId) {
+        setFormErrors((prev) => ({
+          ...prev,
+          caso_id:
+            'Já existe um caso com este ID. Use outro caso_id ou consulte o registro existente.',
+        }))
+        setFormSubmitError(null)
+      } else if (Object.keys(fieldErrors).length > 0) {
         setFormErrors(fieldErrors)
         setFormSubmitError(null)
       } else {
